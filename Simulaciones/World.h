@@ -2,14 +2,19 @@
 
 #include "Headers.h"
 #include "Scene.h"
+#include "xenaScene.h"
 
 class World
 {
   RenderWindow*	
   m_renderTarget;
 
-  Scene        
-  m_scene;
+  //Scene        
+  
+  //m_scene;
+
+  xenaScene
+    m_scene;
 
   Timer*
   m_timer;

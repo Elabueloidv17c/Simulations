@@ -5,6 +5,8 @@
 
 class Scene
 {
+  // esto es para que las clases derivadas puede acceder a estos miembros 
+protected:
   RenderWindow*	
   m_renderTarget;
 
@@ -22,13 +24,13 @@ class Scene
 
 public:
   
-  void				
+  virtual void				
   Initialize(RenderWindow* renderTarget, Color background, Timer* timer);
 
   void				
   ProcessInput(const Event& event);
-
-  void				
+  // la hice virtual para poder crear mi propia ecena 
+  virtual void				
   Render();
   
   void				
