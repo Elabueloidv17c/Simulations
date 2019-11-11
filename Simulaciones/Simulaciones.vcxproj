@@ -156,18 +156,23 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="cEntity.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="World.cpp" />
+    <ClCompile Include="xenaScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="cEntity.h" />
     <ClInclude Include="Headers.h" />
+    <ClInclude Include="helper.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="World.h" />
+    <ClInclude Include="xenaScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

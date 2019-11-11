@@ -12,15 +12,23 @@ void
 xenaScene::Render()
 {
   m_renderTarget->clear(m_backgroundColor);
-  sf::CircleShape circle(100.0f);
-  circle.setFillColor(sf::Color::Red);
-  m_renderTarget->draw(circle);
+  sf::Vector2u windowSize = m_renderTarget->getSize();
+  m_entity[0].getSprite().setPosition(windowSize.x * .5f, windowSize.y * .5f);
+  m_entity[1].getSprite().setPosition(windowSize.x * .5f, windowSize.y * 0.9f);
+  m_entity[2].getSprite().setPosition(windowSize.x * .2f, windowSize.y * 0.9f);
+  m_entity[3].getSprite().setPosition(windowSize.x * 0.75f, windowSize.y * 0.95f);
 
-  for (sf::Sprite& sprite : m_sprites) {
-    m_renderTarget->draw(sprite);
+  m_entity[4].getSprite().setPosition(windowSize.x * .59f, windowSize.y * .5f);
+  m_entity[5].getSprite().setPosition(windowSize.x * .68f, windowSize.y * .5f);
+  m_entity[6].getSprite().setPosition(windowSize.x * .39f, windowSize.y * .5f);
+  //m_entity[0].getSprite().setPosition(windowSize.x / 2.0f, windowSize.y / 2.0f);
+  //m_entity[0].getSprite().setPosition(windowSize.x / 2.0f, windowSize.y / 2.0f);
+
+
+  for (cEntity& entity : m_entity) {
+    m_renderTarget->draw(entity.getSprite());
   }
 
-  //Draw scene here
 
   m_renderTarget->display();
 
@@ -42,17 +50,17 @@ xenaScene::Initialize(RenderWindow* renderTarget, Color background, Timer* timer
 
   sf::Vector2u originlaSize = m_textures[0].getSize();
 
-  for (uint32_t i = 0; i < 10; ++i) {
-    m_sprites.emplace_back();
-    m_sprites[i].setTexture(m_textures[0]);
-    // making the image a 100 by 100  image 
-    sf::Vector2f NewScale = ReScale(originlaSize,100, 100);
-    m_sprites[i].setScale(NewScale);
+  for (uint32_t i = 0; i < 10; ++i)
+  {
+    sf::Sprite result(m_textures[0]);
+    m_entity.push_back(result);
 
+    sf::Vector2f NewScale = ReScale(originlaSize, 100, 100);
+    m_entity[i].getSprite().setScale(NewScale);
+    sf::Vector2f  newSize = sf::Vector2f(originlaSize.x * NewScale.x, originlaSize.y * NewScale.y);
+
+    m_entity[i].getSprite().setOrigin(newSize.x, newSize.y * .5f);
   }
-
-
-
 
   Vector2f screenSize = static_cast<Vector2f>(m_renderTarget->getSize());
   m_camera.Initialize(screenSize, 3000.0f, 10.0f, 20.0f, timer);
