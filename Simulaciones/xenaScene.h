@@ -27,6 +27,7 @@ public:
 
   void
   Initialize(RenderWindow* renderTarget, Color background, Timer* timer) override;
+
   
 protected:
 
@@ -39,6 +40,9 @@ protected:
   void
   loadBricks();
 
+  void
+  calculateWallSize();
+
 private:// variables 
 
   // for all the sprites 
@@ -49,7 +53,8 @@ private:// variables
   std::vector<sf::Texture>
   m_textures;
 
-  cMap m_map;
+  cMap 
+  m_map;
   
 };
 

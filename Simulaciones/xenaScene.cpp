@@ -47,15 +47,43 @@ xenaScene::Initialize(RenderWindow* renderTarget, Color background, Timer* timer
 
   this->loadBricks();
 
-  //for (size_t i = 0; i < 4; ++i) {
+  for (size_t i = 0; i < 4; ++i) {
 
-  //  sf::Sprite result(m_textures[1]);
-  //  m_entity.push_back(result);
-  //}
+    sf::Sprite result(m_textures[1]);
+    m_entity.push_back(result);
+  }
+
 
   Vector2f screenSize = static_cast<Vector2f>(m_renderTarget->getSize());
-  m_camera.Initialize(screenSize, 3000.0f, 10.0f, 20.0f, timer);
 
+  auto LastEntity = m_entity.end();
+  LastEntity--;
+
+  constexpr float SizeFactor = 1.3f;
+
+  for (size_t i = 0; i < 2; ++i)
+  {
+    sf::Vector2u originalSize = m_textures[1].getSize();
+
+    (*LastEntity).getSprite().setPosition(0, 0);
+    sf::Vector2f NewScale;
+
+    (i % 2 == 0) ? NewScale = ReScale(originalSize, screenSize.x * SizeFactor, 10)
+      : NewScale = ReScale(originalSize, 10, screenSize.y * SizeFactor);
+
+    (*LastEntity).getSprite().setScale(NewScale);
+    LastEntity--;
+  }
+
+  sf::Vector2u TextureSize = m_textures[1].getSize();
+  (*LastEntity).getSprite().setPosition(screenSize.x * SizeFactor, 0);
+  (*LastEntity).getSprite().setScale(ReScale(TextureSize, 10, screenSize.y * SizeFactor));
+  LastEntity--;
+  (*LastEntity).getSprite().setPosition(0, screenSize.y * SizeFactor);
+  (*LastEntity).getSprite().setScale(ReScale(TextureSize, screenSize.x * SizeFactor, 10));
+
+
+  m_camera.Initialize(screenSize, 3000.0f, 10.0f, 20.0f, timer);
 }
 
 bool xenaScene::loadTextures()
@@ -83,7 +111,7 @@ xenaScene::loadMap(const char* mapFile)
   return m_map.init(mapFile);
 }
 
-void 
+void
 xenaScene::loadBricks()
 {
   sf::Vector2u originlaSize = m_textures[0].getSize();
@@ -92,10 +120,10 @@ xenaScene::loadBricks()
   sMapDim mapDimentions = m_map.getMapDimentions();
 
   //! to calculate the position of a entity in screen coordinates 
-  const float xMinimalScreenPos = screenSize.x /(float) mapDimentions.columns ;
-  const float yMinimalScreenPos = screenSize.y /(float) mapDimentions.rows;
+  const float xMinimalScreenPos = screenSize.x / (float)mapDimentions.columns;
+  const float yMinimalScreenPos = screenSize.y / (float)mapDimentions.rows;
 
-  auto &PositionsContianer= m_map.getPositionsRef();
+  auto& PositionsContianer = m_map.getPositionsRef();
   for (size_t i = 0; i < m_map.getPositionsCount(); ++i)
   {
     sf::Sprite result(m_textures[0]);
@@ -107,10 +135,42 @@ xenaScene::loadBricks()
 
     // calculate position in map space 
     m_entity[i].getSprite().setOrigin(newSize.x, newSize.y * .5f);
-    m_entity[i].setMapPosition(PositionsContianer[i].x,PositionsContianer[i].y);
+    m_entity[i].setMapPosition(PositionsContianer[i].x, PositionsContianer[i].y);
 
     // calculate positions in screen space 
     Point EntityPos = m_entity[i].getMapPosition();
     m_entity[i].setSpritePosition(EntityPos.x * xMinimalScreenPos, EntityPos.y * yMinimalScreenPos);
   }
+}
+
+void 
+xenaScene::calculateWallSize()
+{
+  Vector2f screenSize = static_cast<Vector2f>(m_renderTarget->getSize());
+
+  auto LastEntity = m_entity.end();
+  LastEntity--;
+
+  constexpr float SizeFactor = 1.3f;
+
+  for (size_t i = 0; i < 2; ++i)
+  {
+    sf::Vector2u originalSize = m_textures[1].getSize();
+
+    (*LastEntity).getSprite().setPosition(0, 0);
+    sf::Vector2f NewScale;
+
+    (i % 2 == 0) ? NewScale = ReScale(originalSize, screenSize.x * SizeFactor, 10)
+      : NewScale = ReScale(originalSize, 10, screenSize.y * SizeFactor);
+
+    (*LastEntity).getSprite().setScale(NewScale);
+    LastEntity--;
+  }
+
+  sf::Vector2u TextureSize = m_textures[1].getSize();
+  (*LastEntity).getSprite().setPosition(screenSize.x * SizeFactor, 0);
+  (*LastEntity).getSprite().setScale(ReScale(TextureSize, 10, screenSize.y * SizeFactor));
+  LastEntity--;
+  (*LastEntity).getSprite().setPosition(0, screenSize.y * SizeFactor);
+  (*LastEntity).getSprite().setScale(ReScale(TextureSize, screenSize.x * SizeFactor, 10));
 }
