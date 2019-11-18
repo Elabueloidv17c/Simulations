@@ -24,3 +24,22 @@ cEntity::getSprite()
 {
   return m_sprite;
 }
+
+Point 
+cEntity::getMapPosition() const
+{
+  return m_positionInMap;
+}
+
+void 
+cEntity::setMapPosition(uint32_t x, uint32_t y)
+{
+  this->m_positionInMap.x = x;
+  this->m_positionInMap.y = y;
+}
+
+void 
+cEntity::setSpritePosition(float xPos, float yPos)
+{
+  m_sprite.setPosition(xPos, yPos);
+}

@@ -1,5 +1,7 @@
 #include "xenaScene.h"
 #include "helper.h"
+// std includes 
+#include <cassert>
 
 
 xenaScene::xenaScene()
@@ -12,26 +14,14 @@ void
 xenaScene::Render()
 {
   m_renderTarget->clear(m_backgroundColor);
+
   sf::Vector2u windowSize = m_renderTarget->getSize();
-  m_entity[0].getSprite().setPosition(windowSize.x * .5f, windowSize.y * .5f);
-  m_entity[1].getSprite().setPosition(windowSize.x * .5f, windowSize.y * 0.9f);
-  m_entity[2].getSprite().setPosition(windowSize.x * .2f, windowSize.y * 0.9f);
-  m_entity[3].getSprite().setPosition(windowSize.x * 0.75f, windowSize.y * 0.95f);
-
-  m_entity[4].getSprite().setPosition(windowSize.x * .59f, windowSize.y * .5f);
-  m_entity[5].getSprite().setPosition(windowSize.x * .68f, windowSize.y * .5f);
-  m_entity[6].getSprite().setPosition(windowSize.x * .39f, windowSize.y * .5f);
-  //m_entity[0].getSprite().setPosition(windowSize.x / 2.0f, windowSize.y / 2.0f);
-  //m_entity[0].getSprite().setPosition(windowSize.x / 2.0f, windowSize.y / 2.0f);
-
 
   for (cEntity& entity : m_entity) {
     m_renderTarget->draw(entity.getSprite());
   }
 
-
   m_renderTarget->display();
-
 }
 
 void
@@ -41,16 +31,72 @@ xenaScene::Initialize(RenderWindow* renderTarget, Color background, Timer* timer
   m_backgroundColor = background;
   m_timer = timer;
 
+  bool isSucceful = this->loadTextures();
+
+  if (!isSucceful)
+  {
+    assert(isSucceful == true);
+  }
+
+  isSucceful = this->loadMap("..//map//test.txt");
+
+  if (!isSucceful)
+  {
+    assert(isSucceful == true);
+  }
+
+  this->loadBricks();
+
+  //for (size_t i = 0; i < 4; ++i) {
+
+  //  sf::Sprite result(m_textures[1]);
+  //  m_entity.push_back(result);
+  //}
+
+  Vector2f screenSize = static_cast<Vector2f>(m_renderTarget->getSize());
+  m_camera.Initialize(screenSize, 3000.0f, 10.0f, 20.0f, timer);
+
+}
+
+bool xenaScene::loadTextures()
+{
+  m_textures.emplace_back();
   m_textures.emplace_back();
 
   if (!m_textures[0].loadFromFile("../sprites/rock.png"))
   {
-    std::cout << "it failed";
+    std::cerr << "it failed";
+    return false;
   }
 
+  if (!m_textures[1].loadFromFile("../sprites/brick_wall.png")) {
+
+    std::cerr << "it failed";
+    return false;
+  }
+  return true;
+}
+
+bool
+xenaScene::loadMap(const char* mapFile)
+{
+  return m_map.init(mapFile);
+}
+
+void 
+xenaScene::loadBricks()
+{
   sf::Vector2u originlaSize = m_textures[0].getSize();
 
-  for (uint32_t i = 0; i < 10; ++i)
+  Vector2f screenSize = static_cast<Vector2f>(m_renderTarget->getSize());
+  sMapDim mapDimentions = m_map.getMapDimentions();
+
+  //! to calculate the position of a entity in screen coordinates 
+  const float xMinimalScreenPos = screenSize.x /(float) mapDimentions.columns ;
+  const float yMinimalScreenPos = screenSize.y /(float) mapDimentions.rows;
+
+  auto &PositionsContianer= m_map.getPositionsRef();
+  for (size_t i = 0; i < m_map.getPositionsCount(); ++i)
   {
     sf::Sprite result(m_textures[0]);
     m_entity.push_back(result);
@@ -59,10 +105,12 @@ xenaScene::Initialize(RenderWindow* renderTarget, Color background, Timer* timer
     m_entity[i].getSprite().setScale(NewScale);
     sf::Vector2f  newSize = sf::Vector2f(originlaSize.x * NewScale.x, originlaSize.y * NewScale.y);
 
+    // calculate position in map space 
     m_entity[i].getSprite().setOrigin(newSize.x, newSize.y * .5f);
+    m_entity[i].setMapPosition(PositionsContianer[i].x,PositionsContianer[i].y);
+
+    // calculate positions in screen space 
+    Point EntityPos = m_entity[i].getMapPosition();
+    m_entity[i].setSpritePosition(EntityPos.x * xMinimalScreenPos, EntityPos.y * yMinimalScreenPos);
   }
-
-  Vector2f screenSize = static_cast<Vector2f>(m_renderTarget->getSize());
-  m_camera.Initialize(screenSize, 3000.0f, 10.0f, 20.0f, timer);
-
 }
